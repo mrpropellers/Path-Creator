@@ -13,7 +13,7 @@ namespace PathCreation
         [Header("Appearance")]
         public float anchorSize = 10;
         public float controlSize = 7f;
-        
+
         [Tooltip("Should the path still be drawn when behind objects in the scene?")]
         public bool visibleBehindObjects = true;
         [Tooltip("Should the path be drawn even when the path object is not selected?")]
@@ -52,17 +52,17 @@ namespace PathCreation
 
 #if UNITY_EDITOR
         public static GlobalDisplaySettings Load() {
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:GlobalDisplaySettings");
-            if (guids.Length == 0)
+            var assetIds = UnityEditor.AssetDatabase.FindAssets("t:GlobalDisplaySettings");
+            if (assetIds.Length > 0)
             {
-                Debug.LogWarning("Could not find DisplaySettings asset. Will use default settings instead.");
-                return ScriptableObject.CreateInstance<GlobalDisplaySettings>();
+                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(assetIds[0]);
+                var settings = UnityEditor.AssetDatabase.LoadAssetAtPath<GlobalDisplaySettings>(path);
+                if (settings != null)
+                    return settings;
             }
-            else
-            {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
-                return UnityEditor.AssetDatabase.LoadAssetAtPath<GlobalDisplaySettings>(path);
-            }
+
+            Debug.LogWarning("Could not find DisplaySettings asset. Will use default settings instead.");
+            return CreateInstance<GlobalDisplaySettings>();
         }
 #endif
 
